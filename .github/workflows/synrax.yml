@@ -86,13 +86,18 @@ jobs:
       run: |
         cd .
         
-        # 1. Read the last 50 lines of logs
-        LOGS=$(tail -n 50 synrax_app.log)
+        if [ -f synrax_app.log ]; then
+          LOGS=$(tail -n 50 synrax_app.log)
+          ERROR_MSG="Your application failed to start or did not respond on port **5000**."
+        else
+          LOGS="No application logs found. The build or setup step likely failed before the app could start. Check the 'Build and Install Dependencies' step in the Actions tab."
+          ERROR_MSG="The workflow failed before the application could be started."
+        fi
         
         # 2. Post the comment using GitHub CLI
         gh pr comment $PR_NUMBER --body "### Smoke Test Failed
-        
-        Your application failed to start or did not respond on port **5000**.
+
+        $ERROR_MSG
         
         <details>
         <summary><strong>View Crash Logs</strong></summary>
