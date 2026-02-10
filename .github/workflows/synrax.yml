@@ -1,7 +1,7 @@
 name: Synrax Workflow
 on:
   pull_request:
-    branches: [ "broken-go" ]
+    branches: [ "main" ]
 
 jobs:
   smoke-test:
@@ -15,28 +15,28 @@ jobs:
 
     # 2. Install language/environment
     
-    - name: Setup Go
-      uses: actions/setup-go@v5
+    - name: Setup Python
+      uses: actions/setup-python@v5
       with:
-        go-version: '1.21'
-        cache: true
+        python-version: '3.10'
+        cache: 'pip'
     
 
     # 3. Build and install dependencies
     - name: Build and Install Dependencies
       run: |
-        cd ./working-go
-        echo "Running Build Command: go build -o app"
-        go build -o app
+        cd ./working-python
+        echo "Running Build Command: pip install -r requirements.txt"
+        pip install -r requirements.txt
 
     # 4. Smoke test
     - name: Start Smoke Test
       run: |
-        cd ./working-go
+        cd ./working-python
         
         # 1. Start App
-        echo "Starting server with: ./app"
-        ./app > synrax_app.log 2>&1 &
+        echo "Starting server with: python app.py"
+        python app.py > synrax_app.log 2>&1 &
         APP_PID=$!
 
         # 2. Wait Loop
@@ -53,14 +53,14 @@ jobs:
           fi
           
           # Port Check
-          if curl --silent --fail http://127.0.0.1:8081; then
+          if curl --silent --fail http://127.0.0.1:5000; then
             echo
-            echo "SUCCESS: Server responded on port 8081"
+            echo "SUCCESS: Server responded on port 5000"
             kill $APP_PID 2>/dev/null || true
             exit 0
           fi
           
-          echo "Port 8081 not ready... retrying ($((count+1))/$MAX_RETRIES)"
+          echo "Port 5000 not ready... retrying ($((count+1))/$MAX_RETRIES)"
           sleep 2
           count=$((count+1))
         done
