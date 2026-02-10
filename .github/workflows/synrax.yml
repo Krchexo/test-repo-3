@@ -3,6 +3,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   smoke-test:
     runs-on: ubuntu-latest
@@ -25,14 +29,14 @@ jobs:
     # 3. Build and install dependencies
     - name: Build and Install Dependencies
       run: |
-        cd ./broken-python
+        cd .
         echo "Running Build Command: pip install -r requirements.txt"
         pip install -r requirements.txt
 
     # 4. Smoke test
     - name: Start Smoke Test
       run: |
-        cd ./broken-python
+        cd .
         
         # 1. Start App
         echo "Starting server with: python app.py"
@@ -72,3 +76,28 @@ jobs:
         
         kill $APP_PID
         exit 1
+
+    # 5. Comment if failure
+    - name: Post Crash Report
+      if: failure()
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        cd .
+        
+        # 1. Read the last 50 lines of logs
+        LOGS=$(tail -n 50 synrax_app.log)
+        
+        # 2. Post the comment using GitHub CLI
+        gh pr comment $PR_NUMBER --body "### Smoke Test Failed
+        
+        Your application failed to start or did not respond on port **5000**.
+        
+        <details>
+        <summary><strong>View Crash Logs</strong></summary>
+        
+        \`\`\`text
+        $LOGS
+        \`\`\`
+        </details>
