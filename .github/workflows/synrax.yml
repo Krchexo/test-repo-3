@@ -25,14 +25,14 @@ jobs:
     # 3. Build and install dependencies
     - name: Build and Install Dependencies
       run: |
-        cd .
+        cd ./broken-go
         echo "Running Build Command: go build -o app"
         go build -o app
 
     # 4. Smoke test
     - name: Start Smoke Test
       run: |
-        cd .
+        cd ./broken-go
         
         # 1. Start App
         echo "Starting server with: ./app"
