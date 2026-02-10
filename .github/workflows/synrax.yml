@@ -29,14 +29,14 @@ jobs:
     # 3. Build and install dependencies
     - name: Build and Install Dependencies
       run: |
-        cd ./broken-go
+        cd ./working-go
         echo "Running Build Command: go build -o app"
         go build -o app
 
     # 4. Smoke test
     - name: Start Smoke Test
       run: |
-        cd ./broken-go
+        cd ./working-go
         
         # 1. Start App
         echo "Starting server with: ./app"
@@ -84,7 +84,7 @@ jobs:
         GH_TOKEN: ${{ github.token }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
-        cd ./broken-go
+        cd ./working-go
 
         if [ -f synrax_app.log ]; then
           LOGS=$(tail -n 50 synrax_app.log)
