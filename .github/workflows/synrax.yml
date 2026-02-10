@@ -25,14 +25,14 @@ jobs:
     # 3. Build and install dependencies
     - name: Build and Install Dependencies
       run: |
-        cd ./working-python
+        cd ./broken-python
         echo "Running Build Command: pip install -r requirements.txt"
         pip install -r requirements.txt
 
     # 4. Smoke test
     - name: Start Smoke Test
       run: |
-        cd ./working-python
+        cd ./broken-python
         
         # 1. Start App
         echo "Starting server with: python app.py"
