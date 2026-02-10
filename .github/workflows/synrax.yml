@@ -57,14 +57,14 @@ jobs:
           fi
           
           # Port Check
-          if curl --silent --fail http://127.0.0.1:8080; then
+          if curl --silent --fail http://127.0.0.1:8081; then
             echo
-            echo "SUCCESS: Server responded on port 8080"
+            echo "SUCCESS: Server responded on port 8081"
             kill $APP_PID 2>/dev/null || true
             exit 0
           fi
           
-          echo "Port 8080 not ready... retrying ($((count+1))/$MAX_RETRIES)"
+          echo "Port 8081 not ready... retrying ($((count+1))/$MAX_RETRIES)"
           sleep 2
           count=$((count+1))
         done
@@ -88,7 +88,7 @@ jobs:
 
         if [ -f synrax_app.log ]; then
           LOGS=$(tail -n 50 synrax_app.log)
-          ERROR_MSG="Your application failed to start or did not respond on port **8080**."
+          ERROR_MSG="Your application failed to start or did not respond on port **8081**."
         else
           LOGS="The build likely failed before the app started."
           ERROR_MSG="The workflow failed during the build step."
