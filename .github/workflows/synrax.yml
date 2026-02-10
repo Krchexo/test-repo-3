@@ -98,7 +98,7 @@ jobs:
         fi
 
         cat <<EOF > comment_body.md
-        ### Smoke Test Failed
+        ![Failed](https://img.shields.io/badge/Smoke_Test-Failed-critical?style=for-the-badge)
         
         $ERROR_MSG
         
@@ -123,7 +123,7 @@ jobs:
         PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
         cat <<EOF > success_body.md
-        ### Smoke Test Passed
+        ![Passed](https://img.shields.io/badge/Smoke_Test-Passed-success?style=for-the-badge)
         
         Your application successfully built, started, and responded on port **8080**.
         
