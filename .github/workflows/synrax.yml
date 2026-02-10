@@ -1,7 +1,7 @@
 name: Synrax Workflow
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "broken-go" ]
 
 jobs:
   smoke-test:
@@ -55,7 +55,7 @@ jobs:
           # Port Check
           if curl --silent --fail http://127.0.0.1:8081; then
             echo
-            echo "\nSUCCESS: Server responded on port 8081"
+            echo "SUCCESS: Server responded on port 8081"
             kill $APP_PID 2>/dev/null || true
             exit 0
           fi
