@@ -54,6 +54,7 @@ jobs:
           
           # Port Check
           if curl --silent --fail http://127.0.0.1:8081; then
+            echo
             echo "\nSUCCESS: Server responded on port 8081"
             kill $APP_PID 2>/dev/null || true
             exit 0
