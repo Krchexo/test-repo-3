@@ -1,0 +1,73 @@
+name: Synrax Workflow
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2 # Stop if it hangs for 2 mins
+
+    steps:
+    # 1. Get the user's code
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 2. Install language/environment
+    
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+        cache: true
+    
+
+    # 3. Build and install dependencies
+    - name: Build and Install Dependencies
+      run: |
+        cd .
+        echo "Running Build Command: go build -o app"
+        go build -o app
+
+    # 4. Smoke test
+    - name: Start Smoke Test
+      run: |
+        cd .
+        
+        # 1. Start App
+        echo "Starting server with: ./app"
+        ./app > synrax_app.log 2>&1 &
+        APP_PID=$!
+
+        # 2. Wait Loop
+        MAX_RETRIES=15
+        count=0
+        
+        while [ $count -lt $MAX_RETRIES ]; do
+          # Crash Test
+          if ! kill -0 $APP_PID 2>/dev/null; then
+            echo "CRITICAL: App process crashed!"
+            echo "--- Crash Logs ---"
+            tail -n 50 synrax_app.log
+            exit 1
+          fi
+          
+          # Port Check
+          if curl --silent --fail http://127.0.0.1:8080; then
+            echo "SUCCESS: Server responded on port 8080"
+            kill $APP_PID 2>/dev/null || true
+            exit 0
+          fi
+          
+          echo "Port 8080 not ready... retrying ($((count+1))/$MAX_RETRIES)"
+          sleep 2
+          count=$((count+1))
+        done
+
+        # 3. Timeout Handler
+        echo "TIMEOUT: Server running but not responding after 30s"
+        echo "--- Application Logs ---"
+        cat synrax_app.log
+        
+        kill $APP_PID
+        exit 1
