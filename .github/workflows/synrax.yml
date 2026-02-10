@@ -25,14 +25,14 @@ jobs:
     # 3. Build and install dependencies
     - name: Build and Install Dependencies
       run: |
-        cd ./broken-go
+        cd ./working-go
         echo "Running Build Command: go build -o app"
         go build -o app
 
     # 4. Smoke test
     - name: Start Smoke Test
       run: |
-        cd ./broken-go
+        cd ./working-go
         
         # 1. Start App
         echo "Starting server with: ./app"
@@ -53,13 +53,13 @@ jobs:
           fi
           
           # Port Check
-          if curl --silent --fail http://127.0.0.1:8080; then
-            echo "SUCCESS: Server responded on port 8080"
+          if curl --silent --fail http://127.0.0.1:8081; then
+            echo "SUCCESS: Server responded on port 8081"
             kill $APP_PID 2>/dev/null || true
             exit 0
           fi
           
-          echo "Port 8080 not ready... retrying ($((count+1))/$MAX_RETRIES)"
+          echo "Port 8081 not ready... retrying ($((count+1))/$MAX_RETRIES)"
           sleep 2
           count=$((count+1))
         done
